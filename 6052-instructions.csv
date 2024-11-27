@@ -1,0 +1,152 @@
+mnemonic,opcode,addressing,bytes,cycles,plus cycles
+ADC,69,Immediate,2,2,0
+ADC,65,Zero Page,2,3,0
+ADC,75,Zero Page X,2,4,0
+ADC,6D,Absolute,3,4,0
+ADC,7D,Absolute X,3,4,1
+ADC,79,Absolute Y,3,4,1
+ADC,61,Indirect X,2,6,0
+ADC,71,Indirect Y,2,5,1
+AND,29,Immediate,2,2,0
+AND,25,Zero Page,2,3,0
+AND,35,Zero Page X,2,4,0
+AND,2D,Absolute,3,4,0
+AND,3D,Absolute X,3,4,1
+AND,39,Absolute Y,3,4,1
+AND,21,Indirect X,2,6,0
+AND,31,Indirect Y,2,5,1
+ASL,0A,Accumulator,1,2,0
+ASL,06,Zero Page,2,5,0
+ASL,16,Zero Page X,2,6,0
+ASL,0E,Absolute,3,6,0
+ASL,1E,Absolute X,3,7,0
+BCC,90,Relative,2,2,1
+BCS,B0,Relative,2,2,1
+BEQ,F0,Relative,2,2,1
+BIT,24,Zero Page,2,3,0
+BIT,2C,Absolute,3,4,0
+BMI,30,Relative,2,2,1
+BNE,D0,Relative,2,2,1
+BPL,10,Relative,2,2,1
+BRK,00,Implied,1,7,0
+BVC,50,Relative,2,2,1
+BVS,70,Relative,2,2,1
+CLC,18,Implied,1,2,0
+CLD,D8,Implied,1,2,0
+CLI,58,Implied,1,2,0
+CLV,B8,Implied,1,2,0
+CMP,C9,Immediate,2,2,0
+CMP,C5,Zero Page,2,3,0
+CMP,D5,Zero Page X,2,4,0
+CMP,CD,Absolute,3,4,0
+CMP,DD,Absolute X,3,4,1
+CMP,D9,Absolute Y,3,4,1
+CMP,C1,Indirect X,2,6,0
+CMP,D1,Indirect Y,2,5,1
+CPX,E0,Immediate,2,2,0
+CPX,E4,Zero Page,2,3,0
+CPX,EC,Absolute,3,4,0
+CPY,C0,Immediate,2,2,0
+CPY,C4,Zero Page,2,3,0
+CPY,CC,Absolute,3,4,0
+DEC,C6,Zero Page,2,5,0
+DEC,D6,Zero Page X,2,6,0
+DEC,CE,Absolute,3,6,0
+DEC,DE,Absolute X,3,7,0
+DEX,CA,Implied,1,2,0
+DEY,88,Implied,1,2,0
+EOR,49,Immediate,2,2,0
+EOR,45,Zero Page,2,3,0
+EOR,55,Zero Page X,2,4,0
+EOR,4D,Absolute,3,4,0
+EOR,5D,Absolute X,3,4,1
+EOR,59,Absolute Y,3,4,1
+EOR,41,Indirect X,2,6,0
+EOR,51,Indirect Y,2,5,1
+INC,E6,Zero Page,2,5,0
+INC,F6,Zero Page X,2,6,0
+INC,EE,Absolute,3,6,0
+INC,FE,Absolute X,3,7,0
+INX,E8,Implied,1,2,0
+INY,C8,Implied,1,2,0
+JMP,4C,Absolute,3,3,0
+JMP,6C,Indirect,3,5,0
+JSR,20,Absolute,3,6,0
+LDA,A9,Immediate,2,2,0
+LDA,A5,Zero Page,2,3,0
+LDA,B5,Zero Page X,2,4,0
+LDA,AD,Absolute,3,4,0
+LDA,BD,Absolute X,3,4,1
+LDA,B9,Absolute Y,3,4,1
+LDA,A1,Indirect X,2,6,0
+LDA,B1,Indirect Y,2,5,1
+LDX,A2,Immediate,2,2,0
+LDX,A6,Zero Page,2,3,0
+LDX,B6,Zero Page Y,2,4,0
+LDX,AE,Absolute,3,4,0
+LDX,BE,Absolute Y,3,4,1
+LDY,A0,Immediate,2,2,0
+LDY,A4,Zero Page,2,3,0
+LDY,B4,Zero Page X,2,4,0
+LDY,AC,Absolute,3,4,0
+LDY,BC,Absolute X,3,4,1
+LSR,4A,Accumulator,1,2,0
+LSR,46,Zero Page,2,5,0
+LSR,56,Zero Page X,2,6,0
+LSR,4E,Absolute,3,6,0
+LSR,5E,Absolute X,3,7,0
+NOP,EA,Implied,1,2,0
+ORA,09,Immediate,2,2,0
+ORA,05,Zero Page,2,3,0
+ORA,15,Zero Page X,2,4,0
+ORA,0D,Absolute,3,4,0
+ORA,1D,Absolute X,3,4,1
+ORA,19,Absolute Y,3,4,1
+ORA,01,Indirect X,2,6,0
+ORA,11,Indirect Y,2,5,1
+PHA,48,Implied,1,3,0
+PHP,08,Implied,1,3,0
+PLA,68,Implied,1,4,0
+PLP,28,Implied,1,4,0
+ROL,2A,Accumulator,1,2,0
+ROL,26,Zero Page,2,5,0
+ROL,36,Zero Page X,2,6,0
+ROL,2E,Absolute,3,6,0
+ROL,3E,Absolute X,3,7,0
+ROR,6A,Accumulator,1,2,0
+ROR,66,Zero Page,2,5,0
+ROR,76,Zero Page X,2,6,0
+ROR,6E,Absolute,3,6,0
+ROR,7E,Absolute X,3,7,0
+RTI,40,Implied,1,6,0
+RTS,60,Implied,1,6,0
+SBC,E9,Immediate,2,2,0
+SBC,E5,Zero Page,2,3,0
+SBC,F5,Zero Page X,2,4,0
+SBC,ED,Absolute,3,4,0
+SBC,FD,Absolute X,3,4,1
+SBC,F9,Absolute Y,3,4,1
+SBC,E1,Indirect X,2,6,0
+SBC,F1,Indirect Y,2,5,1
+SEC,38,Implied,1,2,0
+SED,F8,Implied,1,2,0
+SEI,78,Implied,1,2,0
+STA,85,Zero Page,2,3,0
+STA,95,Zero Page X,2,4,0
+STA,8D,Absolute,3,4,0
+STA,9D,Absolute X,3,5,0
+STA,99,Absolute Y,3,5,0
+STA,81,Indirect X,2,6,0
+STA,91,Indirect Y,2,6,0
+STX,86,Zero Page,2,3,0
+STX,96,Zero Page Y,2,4,0
+STX,8E,Absolute,3,4,0
+STY,84,Zero Page,2,3,0
+STY,94,Zero Page X,2,4,0
+STY,8C,Absolute,3,4,0
+TAX,AA,Implied,1,2,0
+TAY,A8,Implied,1,2,0
+TSX,BA,Implied,1,2,0
+TXA,8A,Implied,1,2,0
+TXS,9A,Implied,1,2,0
+TYA,98,Implied,1,2,0
