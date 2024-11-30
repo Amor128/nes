@@ -26,6 +26,17 @@ static CYCLE_TABLE: [u8; 256] = [
     /*0xF0*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
 ];
 
+static BYTES_TABLE: [u8; 256] = [
+    1, 2, 0, 0, 0, 2, 2, 0, 1, 2, 1, 0, 0, 3, 3, 0, 2, 2, 0, 0, 0, 2, 2, 0, 1, 3, 0, 0, 0, 3, 3, 0,
+    3, 2, 0, 0, 2, 2, 2, 0, 1, 2, 1, 0, 3, 3, 3, 0, 2, 2, 0, 0, 0, 2, 2, 0, 1, 3, 0, 0, 0, 3, 3, 0,
+    1, 2, 0, 0, 0, 2, 2, 0, 1, 2, 1, 0, 3, 3, 3, 0, 2, 2, 0, 0, 0, 2, 2, 0, 1, 3, 0, 0, 0, 3, 3, 0,
+    1, 2, 0, 0, 0, 2, 2, 0, 1, 2, 1, 0, 3, 3, 3, 0, 2, 2, 0, 0, 0, 2, 2, 0, 1, 3, 0, 0, 0, 3, 3, 0,
+    0, 2, 0, 0, 2, 2, 2, 0, 1, 0, 1, 0, 3, 3, 3, 0, 2, 2, 0, 0, 2, 2, 2, 0, 1, 3, 1, 0, 0, 3, 0, 0,
+    2, 2, 2, 0, 2, 2, 2, 0, 1, 2, 1, 0, 3, 3, 3, 0, 2, 2, 0, 0, 2, 2, 2, 0, 1, 3, 1, 0, 3, 3, 3, 0,
+    2, 2, 0, 0, 2, 2, 2, 0, 1, 2, 1, 0, 3, 3, 3, 0, 2, 2, 0, 0, 0, 2, 2, 0, 1, 3, 0, 0, 0, 3, 3, 0,
+    2, 2, 0, 0, 2, 2, 2, 0, 1, 2, 1, 0, 3, 3, 3, 0, 2, 2, 0, 0, 0, 2, 2, 0, 1, 3, 0, 0, 0, 3, 3, 0,
+];
+
 /// 状态寄存器标志位
 pub const FLAG_C: u8 = 0b00000001; // Carry Flag (进位标志)
 pub const FLAG_Z: u8 = 0b00000010; // Zero Flag (零标志)
@@ -46,12 +57,26 @@ pub struct CPU {
 }
 
 impl CPU {
+    pub fn adc(&mut self, mode: &AddressingMode) {
+        let addr = self.addressing(mode);
+        let value = self.mem_read(addr);
+        let carry = if self.get_glag(FLAG_C) { 1 } else { 0 };
+        let (result, overflow) = self.a.overflowing_add(value);
+        self.a = result;
+        self.set_flag(FLAG_C, overflow);
+        self.set_flag(FLAG_Z, self.a == 0);
+        self.set_flag(FLAG_N, self.a & 0x80 != 0);
+        self.set_flag(FLAG_V, (self.a ^ value) & (self.a ^ result) & 0x80 != 0);
+
+        // TODO update p by the length of the instruction
+    }
+
     pub fn lda(&mut self, mode: &AddressingMode) {
-        let addr = self.get_operand_address(mode);
+        let addr = self.addressing(mode);
         let value = self.mem_read(addr);
         self.a = value;
 
-        // TODO update p
+        // TODO update p by the length of the instruction
     }
 }
 
@@ -89,43 +114,43 @@ impl CPU {
         self.mem_write(addr + 1, hi);
     }
 
-    fn get_operand_address(&self, mode: &AddressingMode) -> u16 {
+    fn addressing(&self, mode: &AddressingMode) -> u16 {
+        let arg: u16 = self.pc + 1;
         match mode {
-            AddressingMode::Immediate => self.pc,
-            AddressingMode::ZeroPage => self.mem_read(self.pc) as u16,
+            AddressingMode::Immediate => arg,
+            AddressingMode::ZeroPage => self.mem_read(arg) as u16,
             AddressingMode::ZeroPageX => {
-                let addr = self.mem_read(self.pc) as u16;
+                let addr = self.mem_read(arg) as u16;
                 addr.wrapping_add(self.x as u16)
             }
             AddressingMode::ZeroPageY => {
-                let addr = self.mem_read(self.pc) as u16;
+                let addr = self.mem_read(arg) as u16;
                 addr.wrapping_add(self.y as u16)
             }
-            AddressingMode::Absolute => self.mem_read_u16(self.pc),
+            AddressingMode::Absolute => self.mem_read_u16(arg),
             AddressingMode::AbsoluteX => {
-                let addr = self.mem_read_u16(self.pc);
+                let addr = self.mem_read_u16(arg);
                 addr.wrapping_add(self.x as u16)
             }
             AddressingMode::AbsoluteY => {
-                let addr = self.mem_read_u16(self.pc);
+                let addr = self.mem_read_u16(arg);
                 addr.wrapping_add(self.y as u16)
             }
             // val = PEEK(PEEK((arg + X) % 256) + PEEK((arg + X + 1) % 256) * 256)
             AddressingMode::IndirectX => {
-                let base = self.mem_read(self.pc);
-                let ptr: u8 = (base as u8).wrapping_add(self.x);
-                let lo = self.mem_read(ptr as u16);
-                let hi = self.mem_read(ptr.wrapping_add(1) as u16);
+                let base: u8 = self.mem_read(arg);
+                let ptr: u8 = (base).wrapping_add(self.x);
+                let lo: u8 = self.mem_read(ptr as u16);
+                let hi: u8 = self.mem_read(ptr.wrapping_add(1) as u16);
                 (hi as u16) << 8 | (lo as u16)
             }
             // val = PEEK(PEEK(arg) + PEEK((arg + 1) % 256) * 256 + Y)
             AddressingMode::IndirectY => {
-                let base = self.mem_read(self.pc);
-                let lo = self.mem_read(base as u16);
-                let hi = self.mem_read((base as u8).wrapping_add(1) as u16);
-                let deref_base = (hi as u16) << 8 | (lo as u16);
-                let deref = deref_base.wrapping_add(self.y as u16);
-                deref
+                let base: u8 = self.mem_read(arg);
+                let lo: u8 = self.mem_read(base as u16);
+                let hi: u8 = self.mem_read((base).wrapping_add(1) as u16);
+                let deref_base: u16 = (hi as u16) << 8 | (lo as u16);
+                deref_base.wrapping_add(self.y as u16)
             }
             _ => panic!("Unimplemented addressing mode"),
         }
@@ -135,39 +160,30 @@ impl CPU {
         // note: we move  intialization of program_counter from here to load function
         loop {
             let opscode = self.mem_read(self.pc);
-            self.pc += 1;
             match opscode {
                 0xA9 => {
                     self.lda(&AddressingMode::Immediate);
-                    self.pc += 1;
                 }
                 0xA5 => {
                     self.lda(&AddressingMode::ZeroPage);
-                    self.pc += 1;
                 }
                 0xB5 => {
                     self.lda(&AddressingMode::ZeroPageX);
-                    self.pc += 1;
                 }
                 0xAD => {
                     self.lda(&AddressingMode::Absolute);
-                    self.pc += 2;
                 }
                 0xBD => {
                     self.lda(&AddressingMode::AbsoluteX);
-                    self.pc += 2;
                 }
                 0xB9 => {
                     self.lda(&AddressingMode::AbsoluteY);
-                    self.pc += 2;
                 }
                 0xA1 => {
                     self.lda(&AddressingMode::IndirectX);
-                    self.pc += 1;
                 }
                 0xB1 => {
                     self.lda(&AddressingMode::IndirectY);
-                    self.pc += 1;
                 }
                 _ => {}
             }
